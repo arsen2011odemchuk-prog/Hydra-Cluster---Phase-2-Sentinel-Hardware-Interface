@@ -1,30 +1,29 @@
 # 🛡️ Phase 2: Sentinel Hardware Interface
-### *Bespoke Dual-Token Authentication & Telemetry Console*
+### *Custom 3D-Printed Security Console & Telemetry Bridge*
 
 ## 📌 Project Overview
-**The Sentinel** is a custom-engineered hardware control console designed to provide a physical security layer for the distributed computing cluster. Moving beyond standard software passwords, this device implements a **"Dual-Token Physical Lock"** system that gates high-power compute resources at the hardware level.
+**The Sentinel** is a custom hardware peripheral designed to act as a physical "Gatekeeper" for the Hydra Cluster. This phase focuses on **Human-Machine Interface (HMI)** design and hardware-level security. 
 
-This phase integrates 3D Computer-Aided Design (CAD), low-level firmware development (MicroPython), and bespoke physical fabrication.
+Instead of an independent PC, the Sentinel leverages the processing power of the **Phase 1 Master Node**, functioning as a dedicated hardware security module and telemetry dashboard.
 
 ---
 
-## 🏗️ Hardware Engineering & Design
+## 🏗️ Hardware Integration & Logic
 
-### 1. Custom Console Fabrication
-The foundation of the device is a unique chassis and faceplate designed in **Fusion 360**. 
-*   **Chassis:** Laser-cut 3mm Acrylic or Aluminum plate.
-*   **Ergonomics:** The panel features precision-milled apertures for dual RFID readers and a 7-inch IPS touchscreen mounting bracket.
-*   **Form Factor:** A semi-open desktop terminal providing direct access to internal GPIO headers for debugging and expansion.
+### 1. Host-Powered Architecture
+To maximize efficiency, the Sentinel Console connects directly to the Master Node:
+*   **Display:** Powered via HDMI, providing a dedicated 7-inch "Heads-Up Display" (HUD) for cluster metrics.
+*   **Data Bridge:** The Raspberry Pi Pico communicates with the host OS over a **Serial-over-USB** interface.
 
-### 2. Physical Security Logic (The "Two-Key" System)
-The core logic is handled by a **Raspberry Pi Pico (RP2040)** microcontroller.
-*   **Dual-Factor Auth:** Access to the cluster is granted only when two independent RFID modules (Admin Key + Operator Key) are triggered simultaneously.
-*   **Firmware:** The custom firmware is written in **MicroPython**. It handles sensor interrupts and transmits an encrypted "Security Handshake" signal to the master node.
+### 2. The "Handshake" Security Protocol
+The Pico runs a persistent MicroPython loop. It does not allow the Master Node to initiate Phase 3 GPU tasks until a **Hardware Handshake** is successful.
+*   **Logic:** The host script waits for a "VALID_AUTH" string from the Pico.
+*   **Security:** This ensures that even if the software is compromised, a physical presence is required to "arm" the system.
 
-### 3. Real-Time Telemetry Dashboard
-The console integrates a 7-inch IPS display, serving as the primary visual interface for the cluster:
-*   **Visual UI:** Real-time visualization of GPU load, node temperatures, and authorization status.
-*   **System Bridge:** An internal Micro-PC node processes monitoring data and drives the high-resolution telemetry UI.
+### 3. Custom 3D-Printed Enclosure
+The entire unit is housed in a bespoke, 3D-printed chassis. 
+*   **Material:** PLA (Polylactic Acid).
+*   **Design Focus:** Integrated internal cable management to hide the HDMI and USB tethers, presenting a clean, professional "Control Center" aesthetic.
 
 ---
 
