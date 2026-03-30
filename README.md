@@ -24,6 +24,9 @@ The Pico runs a persistent MicroPython loop. It does not allow the Master Node t
 The entire unit is housed in a bespoke, 3D-printed chassis. 
 *   **Material:** PLA (Polylactic Acid).
 *   **Design Focus:** Integrated internal cable management to hide the HDMI and USB tethers, presenting a clean, professional "Control Center" aesthetic.
+## Diagrams 
+<img width="542" height="677" alt="image" src="https://github.com/user-attachments/assets/1e632e41-fa90-46d3-ae89-2c587a3a2ed6" />
+
 
 ---
 
@@ -48,9 +51,38 @@ The entire unit is housed in a bespoke, 3D-printed chassis.
 *   **MQTT/Serial:** Protocol for transmitting security status between the Console and the Cluster.
 
 ---
+## 🔌 Wiring Diagram (Pinout)
 
-## 📁 Repository Contents
-*   `/CAD_Models`: `.STL` and `.STEP` files for 3D printing or CNC cutting.
-*   `/Firmware_Pico`: Source code for the Raspberry Pi Pico controller.
-*   `/Assets`: Wiring diagrams and electrical schematics.
-*   
+
+| Component | Pin Name | Pico Pin (GPIO) | Physical Pin |
+| :--- | :--- | :--- | :--- |
+| **RFID L (Master)** | SDA (SS) | GP17 | 22 |
+| | SCK | GP18 | 24 |
+| | MOSI | GP19 | 25 |
+| | MISO | GP16 | 21 |
+| **RFID R (Slave)** | SDA (SS) | GP13 | 17 |
+| | SCK | GP10 | 14 |
+| | MOSI | GP11 | 15 |
+| | MISO | GP8 | 11 |
+| **Status LED** | Positive | GP15 | 20 |
+
+---
+
+## 🧠 System Logic Flow (The "Sentinel" Protocol)
+
+```mermaid
+graph TD
+    Start[Power On] --> Init[Init SPI0 & SPI1]
+    Init --> Idle{Scanning Slots...}
+    
+    Idle -->|Card 1 Detected| Check2{Card 2 Present?}
+    Check2 -->|No / Timeout| Error[Access Denied: Dual-Auth Required]
+    Check2 -->|Yes| Validation{Check Whitelist}
+    
+    Validation -->|Match| Grant[Serial: AUTH_GRANTED]
+    Validation -->|Mismatch| Alert[Serial: SECURITY_ALERT]
+    
+    Grant --> Monitor{Keep-Alive Loop}
+    Monitor -->|Card Removed| Revoke[Serial: SESSION_TERMINATED]
+    Revoke --> Idle
+    Error --> Idle
