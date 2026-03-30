@@ -26,6 +26,7 @@ The entire unit is housed in a bespoke, 3D-printed chassis.
 *   **Design Focus:** Integrated internal cable management to hide the HDMI and USB tethers, presenting a clean, professional "Control Center" aesthetic.
 ## Diagrams 
 <img width="542" height="677" alt="image" src="https://github.com/user-attachments/assets/1e632e41-fa90-46d3-ae89-2c587a3a2ed6" />
+<img width="579" height="337" alt="image" src="https://github.com/user-attachments/assets/24919cd0-02b4-490b-bb92-8dea6b1577d6" />
 
 
 ---
@@ -54,24 +55,56 @@ The entire unit is housed in a bespoke, 3D-printed chassis.
 *   **MQTT/Serial:** Protocol for transmitting security status between the Console and the Cluster.
 
 ---
-## 🔌 Wiring Diagram (Pinout)
-
-
-| Component | Pin Name | Pico Pin (GPIO) | Physical Pin |
-| :--- | :--- | :--- | :--- |
-| **RFID L (Master)** | SDA (SS) | GP17 | 22 |
-| | SCK | GP18 | 24 |
-| | MOSI | GP19 | 25 |
-| | MISO | GP16 | 21 |
-| **RFID R (Slave)** | SDA (SS) | GP13 | 17 |
-| | SCK | GP10 | 14 |
-| | MOSI | GP11 | 15 |
-| | MISO | GP8 | 11 |
-| **Status LED** | Positive | GP15 | 20 |
+##  Wiring Diagram (Pinout)
+| Component | Module Pin | Pico Pin (GPIO) | Physical Pin # | Signal Type |
+| :--- | :--- | :--- | :--- | :--- |
+| **RFID Reader L (Master)** | SDA (SS/CS) | **GP17** | 22 | SPI0 CS |
+| | SCK | **GP18** | 24 | SPI0 SCK |
+| | MOSI (TX) | **GP19** | 25 | SPI0 TX |
+| | MISO (RX) | **GP16** | 21 | SPI0 RX |
+| | RST | **GP20** | 26 | Reset |
+| | 3.3V | **3.3V(OUT)** | 36 | Power |
+| | GND | **GND** | 38 | Ground |
+| **RFID Reader R (Slave)** | SDA (SS/CS) | **GP13** | 17 | SPI1 CS |
+| | SCK | **GP10** | 14 | SPI1 SCK |
+| | MOSI (TX) | **GP11** | 15 | SPI1 TX |
+| | MISO (RX) | **GP8** | 11 | SPI1 RX |
+| | RST | **GP9** | 12 | Reset |
+| | 3.3V | **3.3V(OUT)** | 36 | Power |
+| | GND | **GND** | 13 | Ground |
+| **Active Buzzer** | (+) Positive | **GP15** | 20 | Digital Output |
+| | (-) Negative | **GND** | 18 | Ground |
+| **7" IPS Screen** | HDMI | **N/A** | External | Video Feed |
+| | Micro-USB | **N/A** | External | Power / Touch |
 
 ---
 
-## 🧠 System Logic Flow (The "Sentinel" Protocol)
+## 🛠️ Assembly & Wiring Notes
+
+### 1. SPI Bus Separation
+The system uses **Dual-SPI architecture**. This prevents data collisions between the two RFID readers, allowing the Pico to poll both authentication slots simultaneously without lag.
+
+### 2. Power Strategy
+- **7" IPS Screen:** MUST be powered directly from the Master Node (PC) USB port. Do NOT power the screen via the Pico pins, as the current draw exceeds the Pico's limits.
+- **RFID Modules:** Powered by the Pico's 3.3V(OUT) pin. For extra stability, add a 10µF capacitor between VCC and GND if you experience read errors.
+- **Pico:** Powered via the Micro-USB cable, which also acts as the Data Bridge for the `Rolling Password` protocol.
+
+### 3. Cable Management (No-Holder Build)
+- Use **3M VHB Double-Sided Tape** to secure the RFID modules against the front panel.
+- Ensure the **antenna side** (the loop on the PCB) of the RFID reader is facing the plastic wall (2.5mm thickness).
+- Keep SPI jumper wires under **20cm** to avoid electromagnetic interference (EMI).
+
+### 4. Buzzer Polarity
+The Active Piezo Buzzer is polarity-sensitive:
+- **Long Leg (+):** Connect to GP15.
+- **Short Leg (-):** Connect to GND.
+
+
+
+
+---
+
+##  System Logic Flow (The "Sentinel" Protocol)
 
 ```mermaid
 graph TD
