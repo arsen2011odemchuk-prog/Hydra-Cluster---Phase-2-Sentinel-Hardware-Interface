@@ -53,3 +53,4 @@ The entire unit is housed in a bespoke, 3D-printed chassis.
 *   `/CAD_Models`: `.STL` and `.STEP` files for 3D printing or CNC cutting.
 *   `/Firmware_Pico`: Source code for the Raspberry Pi Pico controller.
 *   `/Assets`: Wiring diagrams and electrical schematics.
+*   
