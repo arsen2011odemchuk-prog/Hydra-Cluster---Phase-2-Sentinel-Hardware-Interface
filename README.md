@@ -1,14 +1,14 @@
-# 🛡️ Phase 2: Sentinel Hardware Interface
+#  Phase 2: Sentinel Hardware Interface
 ### *Custom 3D-Printed Security Console & Telemetry Bridge*
 
-## 📌 Project Overview
+##  Project Overview
 **The Sentinel** is a custom hardware peripheral designed to act as a physical "Gatekeeper" for the Hydra Cluster. This phase focuses on **Human-Machine Interface (HMI)** design and hardware-level security. 
 
 Instead of an independent PC, the Sentinel leverages the processing power of the **Phase 1 Master Node**, functioning as a dedicated hardware security module and telemetry dashboard.
 
 ---
 
-## 🏗️ Hardware Integration & Logic
+##  Hardware Integration & Logic
 
 ### 1. Host-Powered Architecture
 To maximize efficiency, the Sentinel Console connects directly to the Master Node:
